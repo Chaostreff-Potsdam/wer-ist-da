@@ -1,6 +1,8 @@
 Wer Ist Da?
 ===========
 
+![](example.png)
+
 Personen können anderen mitteilen, dass sie gerade im Netzwerk sind.
 
 Das ist ein HTTP-Server, der zeigt, wer gerade im Netzwerk ist.
