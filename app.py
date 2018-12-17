@@ -214,6 +214,7 @@ def index(file):
     return static_file(file, root=STATIC_FILES)
 
 def main():
+    start_update_loop()
     run(host='0.0.0.0', port=8080, debug=True)
 
 if __name__ == "__main__":
