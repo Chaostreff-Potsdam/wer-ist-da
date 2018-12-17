@@ -18,6 +18,7 @@ PING_SECONDS = 0.5
 # varables
 DB_FILE = os.path.join(HERE, "data.json") # file to save user data to
 NUMBER_OF_PARALLEL_PINGS = 128
+UPDATE_INTERVAL = 60 # seconds
 
 def get_mac_from_ip(ip:str, default=None):
     """Return a mac address for the ip or default (None)."""
@@ -133,7 +134,7 @@ def get_reachable_mac_addresses():
 def get_networks():
     """Return networks usad by the devices."""
     networks = set()
-    for device in load()["devices"]:
+    for device in DB.load()["devices"]:
         networks.add(get_network_address(device["network"]))
     return networks
 
@@ -152,7 +153,7 @@ def update_loop():
             ping_network(network)
         end = time.time()
         last_updated = start
-        time_left = UPDATE_INTERVAL - end +
+        time_left = UPDATE_INTERVAL - end + start
         if time_left > 0:
             time.sleep(time_left)
 

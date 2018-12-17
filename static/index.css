@@ -4,6 +4,11 @@ body {
     max-width: 42em;
 }
 
+p {
+    padding-left: 1em;
+    padding-right: 1em;
+}
+
 /* form */
 .saved {
     background: lightgreen;
@@ -79,3 +84,4 @@ footer a {
 .devices .about {
     padding-left: 1em;
 }
+
