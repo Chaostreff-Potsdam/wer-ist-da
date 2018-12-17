@@ -5,6 +5,8 @@ from bottle import get, run, template, request, static_file, post
 import ipaddress
 import json
 from concurrent.futures import ThreadPoolExecutor
+import threading
+import time
 
 HERE = os.path.dirname(__file__) or "."
 TEMPLATE_PATH = os.path.join(HERE, "templates", "index.html")
@@ -128,6 +130,42 @@ def get_reachable_mac_addresses():
         macs.add(mac.decode().upper())
     return macs
 
+def get_networks():
+    """Return networks usad by the devices."""
+    networks = set()
+    for device in load()["devices"]:
+        networks.add(get_network_address(device["network"]))
+    return networks
+
+def start_update_loop():
+    """Start the update loop for the reachable addresses."""
+    thread = threading.Thread(target=update_loop, daemon=True)
+    thread.start()
+
+last_update = 0
+def update_loop():
+    """Updtae who is there."""
+    global last_update
+    while True:
+        start = time.time()
+        for network in get_networks():
+            ping_network(network)
+        end = time.time()
+        last_updated = start
+        time_left = UPDATE_INTERVAL - end +
+        if time_left > 0:
+            time.sleep(time_left)
+
+def get_last_update_text():
+    """Return a text for when the last update toop place."""
+    if last_update == 0:
+        return "Noch kein Update."
+    now = time.time()
+    dt = int(now - last_update)
+    min = dt // 60
+    sec = dt % 60
+    return "Stand von vor " + ( str(min) + " Minuten " if min else "") + str(sec) + "Sekunden."
+
 @get('/')
 def index():
     """Render the welcome template."""
@@ -135,6 +173,7 @@ def index():
         TEMPLATE,
         mac=get_request_mac(),
         data=DB.load(),
+        get_last_update_text=get_last_update_text,
         present=get_reachable_mac_addresses())
 
 @post('/')
@@ -149,6 +188,7 @@ def index():
     user["about"] = request.forms["about"][:500]
     user["there"] = "there" in request.forms
     user["away"] = "away" in request.forms
+    user["network"] = str(get_network_address(get_request_ip()))
     save = user["there"] or user["away"] # whether to add or remove the entry
     found = False
     for i in range(len(data["devices"]) - 1 , -1, -1):
@@ -165,6 +205,7 @@ def index():
         TEMPLATE,
         mac=mac,
         data=data,
+        get_last_update_text=get_last_update_text,
         present=get_reachable_mac_addresses(),
         saved=save)
 
