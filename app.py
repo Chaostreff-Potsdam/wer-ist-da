@@ -18,7 +18,7 @@ PING_SECONDS = 0.5
 # varables
 DB_FILE = os.path.join(HERE, "data.json") # file to save user data to
 NUMBER_OF_PARALLEL_PINGS = 128
-UPDATE_INTERVAL = 10 # seconds
+UPDATE_INTERVAL = 300 # seconds
 
 def get_mac_from_ip(ip:str, default=None):
     """Return a mac address for the ip or default (None)."""
@@ -84,7 +84,7 @@ class DB:
 
 def ping(ip):
     """Ping an ip address."""
-    print("ping", ip)
+#    print("ping", ip)
     subprocess.run([
         "ping",
         "-r", # only directly on interfaces
@@ -153,7 +153,7 @@ def update_loop():
         for network in get_networks():
             ping_network(network)
         end = time.time()
-        last_updated = start
+        last_update = start
         time_left = UPDATE_INTERVAL - end + start
         if time_left > 0:
             time.sleep(time_left)
@@ -166,7 +166,7 @@ def get_last_update_text():
     dt = int(now - last_update)
     min = dt // 60
     sec = dt % 60
-    return "Stand von vor " + ( str(min) + " Minuten " if min else "") + str(sec) + "Sekunden."
+    return "Stand von vor " + ( str(min) + " Minuten " if min else "") + str(sec) + " Sekunden."
 
 @get('/')
 def index():
