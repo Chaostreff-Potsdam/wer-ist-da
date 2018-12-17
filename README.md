@@ -32,5 +32,7 @@ pip install -r requirements.txt
 Ausführen
 ---------
 
-
+```
+./app.py
+```
 
