@@ -125,7 +125,7 @@ def get_reachable_mac_addresses():
                 reachable = True
         if mac is None or not reachable:
             continue
-        macs.add(mac.decode())
+        macs.add(mac.decode().upper())
     return macs
 
 @get('/')
