@@ -18,7 +18,7 @@ PING_SECONDS = 0.5
 # varables
 DB_FILE = os.path.join(HERE, "data.json") # file to save user data to
 NUMBER_OF_PARALLEL_PINGS = 128
-UPDATE_INTERVAL = 60 # seconds
+UPDATE_INTERVAL = 10 # seconds
 
 def get_mac_from_ip(ip:str, default=None):
     """Return a mac address for the ip or default (None)."""
@@ -84,6 +84,7 @@ class DB:
 
 def ping(ip):
     """Ping an ip address."""
+    print("ping", ip)
     subprocess.run([
         "ping",
         "-r", # only directly on interfaces
@@ -96,11 +97,11 @@ def ping(ip):
         stdout=subprocess.DEVNULL # usage errors will still print
     )
 
-def iterate_network_addresses(network_or_ip_address):
+def iterate_network_addresses(network):
     """Iterate over all network addresses.
     
     If the network is not known, it is not used."""
-    network = get_network_for_ip(network_or_ip_address)
+    network = get_network_for_ip(ipaddress.ip_network(network).network_address)
     if network is None: # filter unused networks
         return
     ip = network.network_address + 1
@@ -113,7 +114,7 @@ def ping_network(network_or_ip_address, concurrent_pings=NUMBER_OF_PARALLEL_PING
     """Ping all addresses in a network."""
     ping_pool = ThreadPoolExecutor(NUMBER_OF_PARALLEL_PINGS)
     ping_pool.map(ping, iterate_network_addresses(network_or_ip_address))
-    ping_pool.join()
+    ping_pool.shutdown()
 
 def get_reachable_mac_addresses():
     lines = subprocess.check_output(["ip", "neighbor"]).split(b"\n")
@@ -135,7 +136,7 @@ def get_networks():
     """Return networks usad by the devices."""
     networks = set()
     for device in DB.load()["devices"]:
-        networks.add(get_network_address(device["network"]))
+        networks.add(get_network_for_ip(ipaddress.ip_network(device["network"]).network_address))
     return networks
 
 def start_update_loop():
@@ -189,7 +190,7 @@ def index():
     user["about"] = request.forms["about"][:500]
     user["there"] = "there" in request.forms
     user["away"] = "away" in request.forms
-    user["network"] = str(get_network_address(get_request_ip()))
+    user["network"] = str(get_network_for_ip(get_request_ip()))
     save = user["there"] or user["away"] # whether to add or remove the entry
     found = False
     for i in range(len(data["devices"]) - 1 , -1, -1):
