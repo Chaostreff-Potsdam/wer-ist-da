@@ -84,8 +84,7 @@ def index():
         TEMPLATE,
         mac=get_request_mac(),
         data=DB.load(),
-        present=present,
-        saved=False)
+        present=present)
 
 @post('/')
 def index():
@@ -99,16 +98,16 @@ def index():
     user["about"] = request.forms["about"][:500]
     user["there"] = "there" in request.forms
     user["away"] = "away" in request.forms
-    add = user["there"] or user["away"] # whether to add or remove the entry
-    added = not add
+    save = user["there"] or user["away"] # whether to add or remove the entry
+    found = False
     for i in range(len(data["devices"]) - 1 , -1, -1):
         if data["devices"][i]["mac"] == mac:
-            if add:
+            if save:
                 data["devices"][i] = user
             else:
                 del data["devices"][i]
-            added = True
-    if not added:
+            found = True
+    if save and not found:
         data["devices"].append(user)
     DB.save(data)
     return template(
@@ -116,7 +115,7 @@ def index():
         mac=mac,
         data=data,
         present=present,
-        saved=True)
+        saved=save)
 
 @get('/static/<file:path>')
 def index(file):

@@ -1,7 +1,25 @@
+/* page */
+
+body {
+    max-width: 42em;
+}
 
 /* form */
+.saved {
+    background: lightgreen;
+}
 
-.new-entry .new-entry {
+.deleted {
+    background: lightpink;
+}
+
+.message {
+    margin: 1em;
+    padding: 1em;
+    border-radius: 0.3em;
+}
+
+.new-entry {
     margin: 1em;
     padding: 1em;
     border-color: black;
@@ -37,3 +55,22 @@ footer a {
     margin: 1em;
 }
 
+.devices .name {
+    text-align: left;
+    font-weight: bold;
+    padding-right: 1em;
+}
+
+.devices .presence {
+    text-align: center;
+    padding: 0.1em;
+    padding: 0.1em;   
+}
+
+.devices .away .presence {
+    background: lightpink;
+}
+
+.devices .about {
+    padding-left: 1em;
+}

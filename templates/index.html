@@ -8,10 +8,11 @@
         <link href="static/index.css" rel="stylesheet" />
     </head>
     <body>
-      % if saved:
-        <div class="saved">
-            ✓ gespeichert {{ datetime.datetime.now().strftime("%H:%M:%S") }}
-        </div>
+      % if defined("saved"):
+          <div class="{{ "saved" if saved else "deleted" }} message">
+              ✓ {{ "gespeichert" if saved else "gelöscht" }}
+              {{ datetime.datetime.now().strftime("%H:%M:%S") }}
+          </div>
       % end
       % if mac != None:
           % device = ([ device for device in data["devices"] if device["mac"] == mac]  + [{}])[0]
