@@ -4,12 +4,18 @@ import os
 from bottle import get, run, template, request, static_file, post
 import ipaddress
 import json
+from concurrent.futures import ThreadPoolExecutor
 
 HERE = os.path.dirname(__file__) or "."
 TEMPLATE_PATH = os.path.join(HERE, "templates", "index.html")
 TEMPLATE = open(TEMPLATE_PATH).read()
 STATIC_FILES = os.path.join(HERE, "static")
-DB_FILE = os.path.join(HERE, "data.json")
+PING_TTL = 2
+PING_SECONDS = 0.5
+
+# varables
+DB_FILE = os.path.join(HERE, "data.json") # file to save user data to
+NUMBER_OF_PARALLEL_PINGS = 128
 
 def get_mac_from_ip(ip:str, default=None):
     """Return a mac address for the ip or default (None)."""
@@ -73,9 +79,54 @@ class DB:
         with open(DB_FILE, "w") as file:
             return json.dump(data, file, indent=2)
 
-# check who is there
-present = [] # list of mac addresses as returned from get_mac_from_ip
+def ping(ip):
+    """Ping an ip address."""
+    subprocess.run([
+        "ping",
+        "-r", # only directly on interfaces
+        "-t", str(PING_TTL),
+        "-c", "1", # number of pings
+#        "-4", # IPv4 only # does not work everywhere
+        "-n",
+        "-w", str(PING_SECONDS),
+        str(ip)],
+        stdout=subprocess.DEVNULL # usage errors will still print
+    )
 
+def iterate_network_addresses(network_or_ip_address):
+    """Iterate over all network addresses.
+    
+    If the network is not known, it is not used."""
+    network = get_network_for_ip(network_or_ip_address)
+    if network is None: # filter unused networks
+        return
+    ip = network.network_address + 1
+    while ip in network:
+        if ip != network.broadcast_address:
+             yield ip
+        ip += 1
+
+def ping_network(network_or_ip_address, concurrent_pings=NUMBER_OF_PARALLEL_PINGS):
+    """Ping all addresses in a network."""
+    ping_pool = ThreadPoolExecutor(NUMBER_OF_PARALLEL_PINGS)
+    ping_pool.map(ping, iterate_network_addresses(network_or_ip_address))
+    ping_pool.join()
+
+def get_reachable_mac_addresses():
+    lines = subprocess.check_output(["ip", "neighbor"]).split(b"\n")
+    macs = set()
+    for line in lines:
+        mac = None
+        reachable = False
+        for entry in line.split():
+            if b":" in entry:
+                mac = entry
+            elif entry == b"REACHABLE":
+                reachable = True
+        if mac is None or not reachable:
+            continue
+        macs.add(mac.decode())
+    return macs
 
 @get('/')
 def index():
@@ -84,7 +135,7 @@ def index():
         TEMPLATE,
         mac=get_request_mac(),
         data=DB.load(),
-        present=present)
+        present=get_reachable_mac_addresses())
 
 @post('/')
 def index():
@@ -114,7 +165,7 @@ def index():
         TEMPLATE,
         mac=mac,
         data=data,
-        present=present,
+        present=get_reachable_mac_addresses(),
         saved=save)
 
 @get('/static/<file:path>')
