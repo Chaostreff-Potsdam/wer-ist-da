@@ -1,3 +1,5 @@
+% import datetime
+% from html import escape as e
 <!DOCTYPE html>
 <html>
     <head>
@@ -7,7 +9,45 @@
         <link href="static/index.css" rel="stylesheet" />
     </head>
     <body>
-        Your MAC is {{mac}}
+      % if saved:
+        <div class="saved">
+            ✓ gespeichert {{ datetime.datetime.now().strftime("%H:%M:%S") }}
+        </div>
+      % end
+      % if mac != None:
+        <form class="new-entry" action="/" method="post">
+            <input type="text" id="name" name="name" placeholder="Name" /> 
+            <span class="mac">{{ mac }}</span>
+            <br/>
+            <textarea id="about" name="about" placeholder="über mich" /></textarea>
+            <div class="options">
+                <input type="checkbox" name="there" />Anderen zeigen, dass ich da bin
+                <br/>
+                <input type="checkbox" name="away"/>Anderen zeigen, dass ich nicht da bin
+            </div>
+            <input type="submit" value="Speichern" />
+        </form>
+      % end
+        <table class="devices">
+            <tr class="heading">
+                <td class="name">Name</td>
+                <td class="presence">Anwesend</td>
+                <td class="about">Beschreibung</td>
+            </tr>
+          % for device in data["devices"]:
+            % is_present = device["mac"] in present
+            % if not is_present and device["away"] or is_present and device["there"]:
+            <tr class="device {{ 'present' if is_present else 'away' }}">
+                <td class="name">{{ e(device["name"]) }}</td>
+                <td class="presence">{{ 'anwesend' if is_present else 'nicht da' }}</td>
+                <td class="about">{{ e(device["description"]) }}</td>
+            </tr>
+            % end
+          % end
+        </table>
+        <footer>
+            Schau dir den <a href="https://github.com/HashTec-Potsdam/wer-ist-da">Quelltext</a> an.
+        </footer>
     </body>
 </html>
 

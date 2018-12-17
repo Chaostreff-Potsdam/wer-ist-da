@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 import subprocess
 import os
-from bottle import get, run, template, request, static_file
+from bottle import get, run, template, request, static_file, post
 import ipaddress
+import json
 
 HERE = os.path.dirname(__file__) or "."
 TEMPLATE_PATH = os.path.join(HERE, "templates", "index.html")
 TEMPLATE = open(TEMPLATE_PATH).read()
 STATIC_FILES = os.path.join(HERE, "static")
+DB_FILE = os.path.join(HERE, "data.json")
 
 def get_mac_from_ip(ip:str, default=None):
     """Return a mac address for the ip or default (None)."""
@@ -21,7 +23,7 @@ def get_mac_from_ip(ip:str, default=None):
             continue
         for entry in entries:
             if entry.count(b":") == 5: # mac address detected
-                return entry.decode()
+                return entry.decode().upper()
         raise ValueError("Not MAC address found in {}".format(line))
     return default
 
@@ -51,11 +53,58 @@ def get_network_for_ip(ip, default=None):
             return network
     return default
 
+class DB:
+    """Data state of the application kept between restarts."""
+    
+    DEFAULT = {"devices":[]}
+    
+    @classmethod
+    def load(cls):
+        """Load the database."""
+        try:
+            return json.load(open(DB_FILE))
+        except FileNotFoundError:
+            return cls.DEFAULT
+        
+    @staticmethod
+    def save(data):
+        """Save what has come from load."""
+        return json.dump(data, open(DB_FILE, "w"), indent=2)
+
+# check who is there
+present = [] # list of mac addresses as returned from get_mac_from_ip
+
+
 @get('/')
 def index():
+    """Render the welcome template."""
     return template(
         TEMPLATE,
-        mac=get_request_mac())
+        mac=get_request_mac(),
+        data=DB.load(),
+        present=present,
+        saved=False)
+
+@post('/')
+def index():
+    """Save the posted data and render the welcome template."""
+    data = DB.load()
+    user = {}
+    # load user data
+    mac = user["mac"] = get_request_mac()
+    assert mac is not None, "A MAC address is required but is not know."
+    user["name"] = request.forms["name"][:100]
+    user["about"] = request.forms["about"][:500]
+    user["there"] = request.forms["there"] == "true"
+    user["away"] = request.forms["away"] == "true"
+    data["devices"].append(user)
+    DB.save(data)
+    return template(
+        TEMPLATE,
+        mac=mac,
+        data=data,
+        present=present,
+        saved=True)
 
 @get('/static/<file:path>')
 def index(file):

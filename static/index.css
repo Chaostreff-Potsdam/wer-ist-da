@@ -1,0 +1,39 @@
+
+/* form */
+
+.new-entry .new-entry {
+    margin: 1em;
+    padding: 1em;
+    border-color: black;
+    border-width: 0.1em;
+    border-style: solid;
+    border-radius: 0.3em;
+    
+}
+
+.new-entry #about {
+    width: 20em;
+}
+
+
+/* footer */
+footer {
+  color: #aaaaaa;
+  border-top-width: 1px;
+  border-top-style: solid;
+  width: 100%;
+  padding: 0.3em;
+  display: inline-block;
+  margin: 1em;
+}
+
+footer a {
+  color: #0000aa;
+}
+
+/* listed users */
+
+.devices {
+    margin: 1em;
+}
+
