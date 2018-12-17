@@ -62,14 +62,16 @@ class DB:
     def load(cls):
         """Load the database."""
         try:
-            return json.load(open(DB_FILE))
+            with open(DB_FILE) as file:
+                return json.load(file)
         except FileNotFoundError:
             return cls.DEFAULT
         
     @staticmethod
     def save(data):
         """Save what has come from load."""
-        return json.dump(data, open(DB_FILE, "w"), indent=2)
+        with open(DB_FILE, "w") as file:
+            return json.dump(data, file, indent=2)
 
 # check who is there
 present = [] # list of mac addresses as returned from get_mac_from_ip
@@ -95,9 +97,19 @@ def index():
     assert mac is not None, "A MAC address is required but is not know."
     user["name"] = request.forms["name"][:100]
     user["about"] = request.forms["about"][:500]
-    user["there"] = request.forms["there"] == "true"
-    user["away"] = request.forms["away"] == "true"
-    data["devices"].append(user)
+    user["there"] = "there" in request.forms
+    user["away"] = "away" in request.forms
+    add = user["there"] or user["away"] # whether to add or remove the entry
+    added = not add
+    for i in range(len(data["devices"]) - 1 , -1, -1):
+        if data["devices"][i]["mac"] == mac:
+            if add:
+                data["devices"][i] = user
+            else:
+                del data["devices"][i]
+            added = True
+    if not added:
+        data["devices"].append(user)
     DB.save(data)
     return template(
         TEMPLATE,

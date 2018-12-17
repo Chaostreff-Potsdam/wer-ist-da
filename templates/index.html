@@ -1,5 +1,4 @@
 % import datetime
-% from html import escape as e
 <!DOCTYPE html>
 <html>
     <head>
@@ -15,15 +14,16 @@
         </div>
       % end
       % if mac != None:
+          % device = ([ device for device in data["devices"] if device["mac"] == mac]  + [{}])[0]
         <form class="new-entry" action="/" method="post">
-            <input type="text" id="name" name="name" placeholder="Name" /> 
+		<input type="text" id="name" name="name" placeholder="Name" value="{{ device.get("name", "") }}" /> 
             <span class="mac">{{ mac }}</span>
             <br/>
-            <textarea id="about" name="about" placeholder="über mich" /></textarea>
+	    <textarea id="about" name="about" placeholder="über mich">{{ device.get("about", "") }}</textarea>
             <div class="options">
-                <input type="checkbox" name="there" />Anderen zeigen, dass ich da bin
+		    <input type="checkbox" name="there" {{ "checked" if device.get("there") else "" }}/>Anderen zeigen, dass ich da bin
                 <br/>
-                <input type="checkbox" name="away"/>Anderen zeigen, dass ich nicht da bin
+                <input type="checkbox" name="away" {{ "checked" if device.get("away") else "" }} />Anderen zeigen, dass ich nicht da bin
             </div>
             <input type="submit" value="Speichern" />
         </form>
@@ -38,9 +38,9 @@
             % is_present = device["mac"] in present
             % if not is_present and device["away"] or is_present and device["there"]:
             <tr class="device {{ 'present' if is_present else 'away' }}">
-                <td class="name">{{ e(device["name"]) }}</td>
+                <td class="name">{{ device["name"] }}</td>
                 <td class="presence">{{ 'anwesend' if is_present else 'nicht da' }}</td>
-                <td class="about">{{ e(device["description"]) }}</td>
+                <td class="about">{{ device["about"] }}</td>
             </tr>
             % end
           % end
