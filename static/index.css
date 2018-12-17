@@ -63,13 +63,18 @@ footer a {
 
 .devices .presence {
     text-align: center;
-    padding: 0.1em;
-    padding: 0.1em;   
+    padding: 0.3em;
+    border-radius: 0.3em;
 }
 
 .devices .away .presence {
     background: lightpink;
 }
+
+.devices .present .presence {
+    background: lightgreen;
+}
+
 
 .devices .about {
     padding-left: 1em;
