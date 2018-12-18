@@ -85,3 +85,22 @@ footer a {
     padding-left: 1em;
 }
 
+/* links to entries */
+.local-links {
+    position: absolute;
+    top: 0em;
+    right: 0em;
+    background: lightgreen;
+    border-bottom-left-radius: 0.3em;
+    padding: 0.3em;
+}
+
+.local-links a {
+    color: black;
+    text-decoration: none;
+}
+
+.local-links a:hover {
+    color: blue;
+}
+

@@ -1,0 +1,23 @@
+% if mac is None:
+    /* No mac address provided.
+     * Do not show the link as no entry could be created.
+     */
+% else:
+    % for other_ip in ip4_addresses():
+        % if other_ip == ip:
+            % break
+        % end
+        % id=other_ip.replace(".", "-")
+        .ip-{{ id }} {
+            display: none;
+        }
+    % end
+    % id=ip.replace(".", "-")
+    .ip-{{ id }} {
+        display: inline;
+    }
+    .local-links {
+        display: block;
+    }
+% end
+

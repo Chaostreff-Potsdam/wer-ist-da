@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
 import subprocess
 import os
-from bottle import get, run, template, request, static_file, post
+from bottle import get, run, template, request, static_file, post, response
 import ipaddress
 import json
 from concurrent.futures import ThreadPoolExecutor
 import threading
 import time
+from netifaces import interfaces, ifaddresses, AF_INET
 
 HERE = os.path.dirname(__file__) or "."
-TEMPLATE_PATH = os.path.join(HERE, "templates", "index.html")
-TEMPLATE = open(TEMPLATE_PATH).read()
+INDEX_TEMPLATE_PATH = os.path.join(HERE, "templates", "index.html")
+GENRATED_LINK_TEMPLATE_PATH = os.path.join(HERE, "templates", "local-link.css")
+GENRATED_LINKS_TEMPLATE_PATH = os.path.join(HERE, "templates", "local-links.css")
 STATIC_FILES = os.path.join(HERE, "static")
 PING_TTL = 2
 PING_SECONDS = 0.5
@@ -19,6 +21,7 @@ PING_SECONDS = 0.5
 DB_FILE = os.path.join(HERE, "data.json") # file to save user data to
 NUMBER_OF_PARALLEL_PINGS = 128
 UPDATE_INTERVAL = 300 # seconds
+PORT = 8080
 
 def get_mac_from_ip(ip:str, default=None):
     """Return a mac address for the ip or default (None)."""
@@ -168,18 +171,30 @@ def get_last_update_text():
     sec = dt % 60
     return "Stand von vor " + ( str(min) + " Minuten " if min else "") + str(sec) + " Sekunden."
 
+def ip4_addresses():
+    """Return all IPv4 addresses of this computer."""
+    # code from https://stackoverflow.com/a/274644
+    ip_list = []
+    for interface in interfaces():
+        for link in ifaddresses(interface)[AF_INET]:
+            ip_list.append(link['addr'])
+    return ip_list
+
 @get('/')
 def index():
     """Render the welcome template."""
-    return template(
-        TEMPLATE,
-        mac=get_request_mac(),
-        data=DB.load(),
-        get_last_update_text=get_last_update_text,
-        present=get_reachable_mac_addresses())
+    with open(INDEX_TEMPLATE_PATH) as file:
+        return template(
+            file.read(),
+            mac=get_request_mac(),
+            data=DB.load(),
+            get_last_update_text=get_last_update_text,
+            ip4_addresses=ip4_addresses,
+            present=get_reachable_mac_addresses(),
+            PORT=PORT)
 
 @post('/')
-def index():
+def index_post():
     """Save the posted data and render the welcome template."""
     data = DB.load()
     user = {}
@@ -203,21 +218,45 @@ def index():
     if save and not found:
         data["devices"].append(user)
     DB.save(data)
-    return template(
-        TEMPLATE,
-        mac=mac,
-        data=data,
-        get_last_update_text=get_last_update_text,
-        present=get_reachable_mac_addresses(),
-        saved=save)
+    with open(INDEX_TEMPLATE_PATH) as file:
+        return template(
+            file.read(),
+            mac=mac,
+            data=data,
+            get_last_update_text=get_last_update_text,
+            present=get_reachable_mac_addresses(),
+            ip4_addresses=ip4_addresses,
+            saved=save,
+            PORT=PORT)
 
 @get('/static/<file:path>')
-def index(file):
+def get_static_file(file):
     return static_file(file, root=STATIC_FILES)
+
+@get('/generated/local-links.css')
+def get_generated_links():
+    response.content_type = 'text/css; charset=UTF8' # change content type, see https://stackoverflow.com/a/42941804/1320237
+    with open(GENRATED_LINKS_TEMPLATE_PATH) as file:
+        return template(
+            file.read(),
+            ip4_addresses=ip4_addresses,
+        )
+
+@get('/generated/local-link.css')
+def get_generated_links():
+    response.content_type = 'text/css; charset=UTF8' # change content type, see https://stackoverflow.com/a/42941804/1320237
+    ip = request.query["ip"]
+    with open(GENRATED_LINK_TEMPLATE_PATH) as file:
+        return template(
+            file.read(),
+            ip4_addresses=ip4_addresses,
+            ip=ip,
+            mac=get_request_mac(),
+        )
 
 def main():
     start_update_loop()
-    run(host='0.0.0.0', port=8080, debug=True)
+    run(host='0.0.0.0', port=PORT, debug=True)
 
 if __name__ == "__main__":
     main()

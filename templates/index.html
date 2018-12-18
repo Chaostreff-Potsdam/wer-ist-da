@@ -6,6 +6,10 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <meta name="viewport" content="width=device-width,initial-scale=1">
         <link href="static/index.css" rel="stylesheet" />
+        <link href="generated/local-links.css" rel="stylesheet" />
+      % for ip in ip4_addresses():
+        <link href="http://{{ ip }}:{{ PORT }}/generated/local-link.css?ip={{ ip }}" rel="stylesheet" />
+      % end      
     </head>
     <body>
       % if defined("saved"):
@@ -14,7 +18,13 @@
               {{ datetime.datetime.now().strftime("%H:%M:%S") }}
           </div>
       % end
-      % if mac != None:
+      % if mac == None:
+        <div class="local-links">
+          % for ip in ip4_addresses():
+            <a class="ip-{{ ip.replace('.', '-') }} local-link" href="http://{{ ip }}:{{ PORT }}/">Zu meinem Eintrag</a>
+          % end
+        </div>
+      % else:
           % device = ([ device for device in data["devices"] if device["mac"] == mac]  + [{}])[0]
         <form class="new-entry" action="/" method="post">
 		<input type="text" id="name" name="name" placeholder="Name" value="{{ device.get("name", "") }}" /> 
