@@ -21,3 +21,22 @@ These files provide an interface for an autostart-service.
 - `service/service.log` contains the process output.  
   This file is created anew for each process.
 
+## Install as Service
+
+Use this to edit your crontabs:
+
+```
+crontab -e
+``
+
+Add the following to them, where `/home/pi/wer-ist-da` is the location of
+the repository:
+
+```
+@restart /home/pi/wer-ist-da/service/start.sh --install  >/dev/null 2>&1
+@daily /home/pi/wer-ist-da/service/start.sh --install  >/dev/null 2>&1
+```
+
+[Read more in crontab](https://www.cyberciti.biz/faq/how-do-i-add-jobs-to-cron-under-linux-or-unix-oses/).
+
+

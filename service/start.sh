@@ -14,7 +14,7 @@ output="$here/service.log"
 cd "$here"
 ./stop.sh
 if [ -n "$install" ]; then
-  ./install.sh
+  ./install.sh || true
 fi
 
 (
