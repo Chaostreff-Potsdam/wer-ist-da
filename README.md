@@ -38,3 +38,6 @@ Ausführen
 ./app.py
 ```
 
+In Ordner [service](service) steht, wie der Server als Dienst ausgeführt werden
+kann.
+
