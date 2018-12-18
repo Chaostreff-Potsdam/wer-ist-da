@@ -19,7 +19,9 @@ if [ -f "$pid_file" ]; then
   kill -9 $pid || true
   # wait for the process to exit
   # see https://stackoverflow.com/a/19396161
-  sleep .01
+  if [ -e /proc/$pid ]; then
+    sleep .01
+  fi
   while [ -e /proc/$pid ]
   do
     echo -n .
