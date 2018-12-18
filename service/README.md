@@ -27,7 +27,7 @@ Use this to edit your crontabs:
 
 ```
 crontab -e
-``
+```
 
 Add the following to them, where `/home/pi/wer-ist-da` is the location of
 the repository:
