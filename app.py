@@ -113,10 +113,10 @@ def iterate_network_addresses(network):
              yield ip
         ip += 1
 
-def ping_network(network_or_ip_address, concurrent_pings=NUMBER_OF_PARALLEL_PINGS):
+def ping_network(network, concurrent_pings=NUMBER_OF_PARALLEL_PINGS):
     """Ping all addresses in a network."""
     ping_pool = ThreadPoolExecutor(NUMBER_OF_PARALLEL_PINGS)
-    ping_pool.map(ping, iterate_network_addresses(network_or_ip_address))
+    ping_pool.map(ping, iterate_network_addresses(network))
     ping_pool.shutdown()
 
 def get_present_mac_addresses():
@@ -139,7 +139,10 @@ def get_networks():
     """Return networks usad by the devices."""
     networks = set()
     for device in DB.load()["devices"]:
-        networks.add(get_network_for_ip(ipaddress.ip_network(device["network"]).network_address))
+        network_address = ipaddress.ip_network(device["network"]).network_address
+        current_network = get_network_for_ip(network_address)
+        if current_network is not None:
+            networks.add(current_network)
     return networks
 
 def start_update_loop():
