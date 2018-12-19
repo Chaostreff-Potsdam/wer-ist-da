@@ -45,9 +45,13 @@
                 <td class="presence">Anwesend</td>
                 <td class="about">Beschreibung</td>
             </tr>
-          % for device in data["devices"]:
+          % displayed_entries = []
+          % # sort by presence and then by name
+          % for device in sorted(data["devices"], key=lambda device: (device["mac"] not in present, device["name"].lower())):
             % is_present = device["mac"] in present
-            % if not is_present and device["away"] or is_present and device["there"]:
+            % entry = (device["name"], device["about"])
+            % if not entry in displayed_entries and (not is_present and device["away"] or is_present and device["there"]):
+                % displayed_entries.append(entry)
             <tr class="device {{ 'present' if is_present else 'away' }}">
                 <td class="name">{{ device["name"] }}</td>
                 <td class="presence">{{ 'anwesend' if is_present else 'nicht da' }}</td>
