@@ -163,7 +163,7 @@ def update_loop():
             time.sleep(time_left)
 
 def get_last_update_text():
-    """Return a text for when the last update toop place."""
+    """Return a text for when the last update took place."""
     if last_update == 0:
         return "Noch kein Update."
     now = time.time()
