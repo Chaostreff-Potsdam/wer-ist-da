@@ -8,8 +8,6 @@ set -e
 
 install="$1"
 here="`dirname \"$0\"`"
-pid_file="$here/service.pid"
-output="$here/service.log"
 
 cd "$here"
 ./stop.sh
@@ -24,6 +22,9 @@ fi
     >&2 echo "ERROR: Process is file $pid_file exists. Aborting."
     exit 1
   fi
+
+  pid_file="service/service.pid"
+  output="service/service.log"
 
   python3 app.py 2>"$output" 1>"$output" &
   pid="$!"

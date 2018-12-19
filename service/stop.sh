@@ -6,9 +6,9 @@
 set -e
 
 here="`dirname \"$0\"`"
-pid_file="$here/service.pid"
-
 cd "$here"
+
+pid_file="service.pid"
 
 if [ -f "$pid_file" ]; then
   pid="`cat "$pid_file"`"
@@ -29,7 +29,7 @@ if [ -f "$pid_file" ]; then
   done
   rm "$pid_file"
 else
-  >&2 echo "NOTE: No pid file found."
+  >&2 echo "NOTE: No pid file found. Assuming no service is running."
 fi
 
 if [ -f "$pid_file" ]; then
