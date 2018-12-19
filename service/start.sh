@@ -13,7 +13,7 @@ output="$here/service.log"
 
 cd "$here"
 ./stop.sh
-if [ -n "$install" ]; then
+if [ "$install" == "--install" ]; then
   ./install.sh || true
 fi
 
