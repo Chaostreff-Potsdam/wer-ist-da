@@ -26,7 +26,7 @@ fi
   pid_file="service/service.pid"
   output="service/service.log"
 
-  python3 app.py 2>"$output" 1>"$output" &
+  python3 -u app.py 1>"$output" 2>&1 &
   pid="$!"
   echo "$pid" > "$pid_file"
   sleep 0.5
