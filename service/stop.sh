@@ -33,6 +33,6 @@ else
 fi
 
 if [ -f "$pid_file" ]; then
-  >&2 echo "ERROR: Could not delete pid file."
+  >&2 echo "NOTE: Could not delete pid file."
 fi
 
