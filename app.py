@@ -153,6 +153,7 @@ def update_loop():
     global last_update
     while True:
         start = time.time()
+        print("Updating locall networks", start)
         for network in get_networks():
             ping_network(network)
         end = time.time()
