@@ -169,7 +169,7 @@ def get_last_update_text():
     dt = int(now - last_update)
     min = dt // 60
     sec = dt % 60
-    return "Stand von vor " + ( str(min) + " Minuten " if min else "") + str(sec) + " Sekunden."
+    return "Stand von vor " + ( str(min) + " Min. " if min else "") + str(sec) + " Sek."
 
 def ip4_addresses():
     """Return all IPv4 addresses of this computer."""
