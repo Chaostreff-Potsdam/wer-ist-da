@@ -8,6 +8,7 @@ from concurrent.futures import ThreadPoolExecutor
 import threading
 import time
 from netifaces import interfaces, ifaddresses, AF_INET
+import traceback
 
 HERE = os.path.dirname(__file__) or "."
 INDEX_TEMPLATE_PATH = os.path.join(HERE, "templates", "index.html")
@@ -156,11 +157,14 @@ def update_loop():
     global last_update
     while True:
         start = time.time()
-        print("Updating locall networks", start)
-        for network in get_networks():
-            ping_network(network)
+        try:
+            print("Updating local networks", start)
+            for network in get_networks():
+                ping_network(network)
+            last_update = start
+        except:
+            traceback.print_exc()
         end = time.time()
-        last_update = start
         time_left = UPDATE_INTERVAL - end + start
         if time_left > 0:
             time.sleep(time_left)
