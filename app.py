@@ -119,18 +119,18 @@ def ping_network(network_or_ip_address, concurrent_pings=NUMBER_OF_PARALLEL_PING
     ping_pool.map(ping, iterate_network_addresses(network_or_ip_address))
     ping_pool.shutdown()
 
-def get_reachable_mac_addresses():
+def get_present_mac_addresses():
     lines = subprocess.check_output(["ip", "neighbor"]).split(b"\n")
     macs = set()
     for line in lines:
         mac = None
-        reachable = False
+        present = False
         for entry in line.split():
             if b":" in entry:
                 mac = entry
-            elif entry == b"REACHABLE":
-                reachable = True
-        if mac is None or not reachable:
+            elif entry.upper() in [b"REACHABLE", b"STALE"]:
+                present = True
+        if mac is None or not present:
             continue
         macs.add(mac.decode().upper())
     return macs
@@ -143,7 +143,7 @@ def get_networks():
     return networks
 
 def start_update_loop():
-    """Start the update loop for the reachable addresses."""
+    """Start the update loop for the present addresses."""
     thread = threading.Thread(target=update_loop, daemon=True)
     thread.start()
 
@@ -190,7 +190,7 @@ def index():
             data=DB.load(),
             get_last_update_text=get_last_update_text,
             ip4_addresses=ip4_addresses,
-            present=get_reachable_mac_addresses(),
+            present=get_present_mac_addresses(),
             PORT=PORT)
 
 @post('/')
@@ -224,7 +224,7 @@ def index_post():
             mac=mac,
             data=data,
             get_last_update_text=get_last_update_text,
-            present=get_reachable_mac_addresses(),
+            present=get_present_mac_addresses(),
             ip4_addresses=ip4_addresses,
             saved=save,
             PORT=PORT)
