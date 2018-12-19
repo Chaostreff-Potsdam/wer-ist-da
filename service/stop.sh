@@ -28,6 +28,8 @@ if [ -f "$pid_file" ]; then
     sleep .01
   done
   rm "$pid_file"
+else
+  >&2 echo "NOTE: No pid file found."
 fi
 
 if [ -f "$pid_file" ]; then
