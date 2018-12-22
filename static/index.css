@@ -86,16 +86,13 @@ footer a {
 }
 
 /* links to entries */
-.local-links {
+.local-link {
     position: absolute;
     top: 0em;
     right: 0em;
     background: lightgreen;
     border-bottom-left-radius: 0.3em;
     padding: 0.3em;
-}
-
-.local-link {
     /* hide the links until they are loaded by generated css*/
     display: none;
 }

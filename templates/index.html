@@ -6,9 +6,6 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <meta name="viewport" content="width=device-width,initial-scale=1">
         <link href="static/index.css" rel="stylesheet" />
-      % for ip in ip4_addresses():
-        <link href="http://{{ ip }}:{{ PORT }}/generated/local-link.css?ip={{ ip }}" rel="stylesheet" media="none" />
-      % end      
     </head>
     <body>
       % if defined("saved"):
@@ -65,6 +62,9 @@
         <footer>
             Schau dir den <a href="https://github.com/HashTec-Potsdam/wer-ist-da">Quelltext</a> an.
         </footer>
+      % for ip in ip4_addresses():
+        <link href="http://{{ ip }}:{{ PORT }}/generated/local-link.css?ip={{ ip }}" rel="stylesheet" />
+      % end
     </body>
 </html>
 
