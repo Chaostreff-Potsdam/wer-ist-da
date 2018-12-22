@@ -184,8 +184,9 @@ def ip4_addresses():
     # code from https://stackoverflow.com/a/274644
     ip_list = []
     for interface in interfaces():
-        for link in ifaddresses(interface)[AF_INET]:
-            ip_list.append(link['addr'])
+        for link in ifaddresses(interface).get(AF_INET, []):
+            if 'addr' in link:
+                ip_list.append(link['addr'])
     return ip_list
 
 @get('/')
