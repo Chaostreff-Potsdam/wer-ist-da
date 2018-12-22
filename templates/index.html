@@ -6,9 +6,8 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <meta name="viewport" content="width=device-width,initial-scale=1">
         <link href="static/index.css" rel="stylesheet" />
-        <link href="generated/local-links.css" rel="stylesheet" />
       % for ip in ip4_addresses():
-        <link href="http://{{ ip }}:{{ PORT }}/generated/local-link.css?ip={{ ip }}" rel="stylesheet" />
+        <link href="http://{{ ip }}:{{ PORT }}/generated/local-link.css?ip={{ ip }}" rel="stylesheet" media="none" />
       % end      
     </head>
     <body>

@@ -95,6 +95,11 @@ footer a {
     padding: 0.3em;
 }
 
+.local-link {
+    /* hide the links until they are loaded by generated css*/
+    display: none;
+}
+
 .local-links a {
     color: black;
     text-decoration: none;
