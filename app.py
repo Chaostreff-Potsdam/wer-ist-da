@@ -210,8 +210,10 @@ def index_post():
     # load user data
     mac = user["mac"] = get_request_mac()
     assert mac is not None, "A MAC address is required but is not know."
-    user["name"] = request.forms["name"][:100]
-    user["about"] = request.forms["about"][:500]
+    # decode as unicode with forms.name instead of forms["name"]
+    # see https://stackoverflow.com/q/33445155/1320237
+    user["name"] = request.forms.name[:100]
+    user["about"] = request.forms.about[:500]
     user["there"] = "there" in request.forms
     user["away"] = "away" in request.forms
     user["network"] = str(get_network_for_ip(get_request_ip()))
