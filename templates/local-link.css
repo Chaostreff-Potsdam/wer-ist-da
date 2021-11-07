@@ -3,7 +3,7 @@
      * Do not show the link as no entry could be created.
      */
 % else:
-    % for other_ip in ip4_addresses():
+    % for other_ip in ip4_addresses:
         % if other_ip == ip:
             % break
         % end

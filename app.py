@@ -198,7 +198,7 @@ def index():
             mac=get_request_mac(),
             data=DB.load(),
             get_last_update_text=get_last_update_text,
-            ip4_addresses=ip4_addresses,
+            ip4_addresses=ip4_addresses(),
             present=get_present_mac_addresses(),
             PORT=PORT)
 
@@ -236,7 +236,7 @@ def index_post():
             data=data,
             get_last_update_text=get_last_update_text,
             present=get_present_mac_addresses(),
-            ip4_addresses=ip4_addresses,
+            ip4_addresses=ip4_addresses(),
             saved=save,
             PORT=PORT)
 
@@ -250,7 +250,7 @@ def get_generated_links():
     with open(GENRATED_LINKS_TEMPLATE_PATH) as file:
         return template(
             file.read(),
-            ip4_addresses=ip4_addresses,
+            ip4_addresses=ip4_addresses(),
         )
 
 @get('/generated/local-link.css')
@@ -260,7 +260,7 @@ def get_generated_links():
     with open(GENRATED_LINK_TEMPLATE_PATH) as file:
         return template(
             file.read(),
-            ip4_addresses=ip4_addresses,
+            ip4_addresses=ip4_addresses(),
             ip=ip,
             mac=get_request_mac(),
         )

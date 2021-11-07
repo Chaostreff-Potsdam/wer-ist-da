@@ -16,7 +16,7 @@
       % end
       % if mac == None:
         <div class="local-links">
-          % for ip in ip4_addresses():
+          % for ip in ip4_addresses:
             <a class="ip-{{ ip.replace('.', '-') }} local-link" href="http://{{ ip }}:{{ PORT }}/">Zu meinem Eintrag</a>
           % end
         </div>
