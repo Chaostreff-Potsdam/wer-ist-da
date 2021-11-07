@@ -4,5 +4,5 @@
 #
 #    pip-compile --output-file requirements.txt requirements.txt
 #
-bottle==0.12.16
+bottle==0.12.19
 netifaces==0.10.7
