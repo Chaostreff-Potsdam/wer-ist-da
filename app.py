@@ -13,7 +13,6 @@ import traceback
 HERE = os.path.dirname(__file__) or "."
 INDEX_TEMPLATE_PATH = os.path.join(HERE, "templates", "index.html")
 GENRATED_LINK_TEMPLATE_PATH = os.path.join(HERE, "templates", "local-link.css")
-GENRATED_LINKS_TEMPLATE_PATH = os.path.join(HERE, "templates", "local-links.css")
 STATIC_FILES = os.path.join(HERE, "static")
 PING_TTL = 2
 PING_SECONDS = 1
@@ -243,15 +242,6 @@ def index_post():
 @get('/static/<file:path>')
 def get_static_file(file):
     return static_file(file, root=STATIC_FILES)
-
-@get('/generated/local-links.css')
-def get_generated_links():
-    response.content_type = 'text/css; charset=UTF8' # change content type, see https://stackoverflow.com/a/42941804/1320237
-    with open(GENRATED_LINKS_TEMPLATE_PATH) as file:
-        return template(
-            file.read(),
-            ip4_addresses=ip4_addresses(),
-        )
 
 @get('/generated/local-link.css')
 def get_generated_links():

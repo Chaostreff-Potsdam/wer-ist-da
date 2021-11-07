@@ -1,7 +1,0 @@
-% for ip in ip4_addresses():
-  % id=ip.replace(".", "-")
-.ip-{{ id }} {
-    display: none;
-}
-% end
-
