@@ -18,7 +18,7 @@ Zur Entwicklung und Ausführung:
 (1) Klonen des Repos
 
 ```
-git clone https://github.com/HashTec-Potsdam/wer-ist-da.git
+git clone https://github.com/Chaostreff-Potsdam/wer-ist-da.git
 cd wer-ist-da
 ```
 
