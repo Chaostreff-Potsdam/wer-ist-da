@@ -16,7 +16,7 @@ GENRATED_LINK_TEMPLATE_PATH = os.path.join(HERE, "templates", "local-link.css")
 GENRATED_LINKS_TEMPLATE_PATH = os.path.join(HERE, "templates", "local-links.css")
 STATIC_FILES = os.path.join(HERE, "static")
 PING_TTL = 2
-PING_SECONDS = 0.5
+PING_SECONDS = 1
 
 # varables
 DB_FILE = os.path.join(HERE, "data.json") # file to save user data to
